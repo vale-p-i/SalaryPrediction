@@ -4,7 +4,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 import shutil
+import statistics
 from sklearn.metrics import accuracy_score, recall_score, confusion_matrix, ConfusionMatrixDisplay, precision_score
+from sklearn.model_selection import cross_validate
+from sklearn.tree import DecisionTreeClassifier
 
 
 def remove_missing_values(df: pd.DataFrame, missing_value: str) -> pd.DataFrame:
@@ -15,7 +18,7 @@ def remove_missing_values(df: pd.DataFrame, missing_value: str) -> pd.DataFrame:
 
 def generete_correlation_matrix(columns):
     correlation_matrix = columns.corr()
-    plt.figure(figsize=(12, 8))
+    plt.figure(figsize=(14, 12))
     sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f', linewidths=.5)
     plt.savefig('output/correlationMatrix.png')
 
@@ -44,11 +47,23 @@ def fit_and_test(classifier, X_train, y_train, X_test, y_test):
     print("Precision:" + str(precision))
 
 
-def clear_dir(dir):
+def cross_validation(X_train, y_train, features, validator):
+    tests = list(["accuracy", "precision", "recall"])
+    cv_score = cross_validate(DecisionTreeClassifier(), X_train, y_train, cv=validator, n_jobs=3, verbose=0, scoring=tests)
+    accuracy_mean = statistics.mean(cv_score['test_accuracy'])
+    precision_mean = statistics.mean(cv_score['test_precision'])
+    recall_mean = statistics.mean(cv_score['test_recall'])
+    print("Using features: " + str(features))
+    print("Accuracy: " + str(accuracy_mean))
+    print("Precision: " + str(precision_mean))
+    print("Recall: " + str(recall_mean))
+
+
+def clear_dir(directory):
     try:
-        if os.path.exists(dir):
-            for file in os.listdir(dir):
-                file_path = os.path.join(dir, file)
+        if os.path.exists(directory):
+            for file in os.listdir(directory):
+                file_path = os.path.join(directory, file)
                 try:
                     if os.path.isfile(file_path):
                         os.unlink(file_path)
@@ -56,8 +71,8 @@ def clear_dir(dir):
                         shutil.rmtree(file_path)
                 except Exception as e:
                     print(f"Errore durante l'eliminazione del file {file_path}: {e}")
-            print(f"Contenuto della cartella {dir} eliminato con successo.")
+            print(f"Contenuto della cartella {directory} eliminato con successo.")
         else:
-            print(f"La cartella {dir} non esiste.")
+            print(f"La cartella {directory} non esiste.")
     except Exception as e:
-        print(f"Errore generale durante la pulizia della cartella {dir}: {e}")
+        print(f"Errore generale durante la pulizia della cartella {directory}: {e}")

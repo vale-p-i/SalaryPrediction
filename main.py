@@ -23,7 +23,7 @@ df['hours-per-week_scaled'] = minmax_scaler.fit_transform(df[['hours-per-week']]
 df['capital-gain_scaled'] = minmax_scaler.fit_transform(df[['capital-gain']])
 df['capital-loss_scaled'] = minmax_scaler.fit_transform(df[['capital-loss']])
 
-#log trasformation
+# log trasformation
 df['capital-gain_log'] = np.log(df['capital-gain'] + 1)
 df['capital-loss_log'] = np.log(df['capital-loss'] + 1)
 
@@ -48,7 +48,7 @@ for i, row in df.iterrows():
 
     if hours == 40:
         df.loc[i, 'hours-per-week_cat'] = 1
-    elif hours < 40 :
+    elif hours < 40:
         df.loc[i, 'hours-per-week_cat'] = 0
     elif hours > 40:
         df.loc[i, 'hours-per-week_cat'] = 2
@@ -71,17 +71,20 @@ df = df[df['occupation'] != ' Armed-Forces']
 
 # encoding
 print("Encoding...")
-mapping = {' Before-HS': 0, ' HS-grad': 1, ' Some-college': 2, ' Assoc':3, ' Bachelors':4, ' Masters':5, ' Doc-Prof':6}
+mapping = {' Before-HS': 0, ' HS-grad': 1, ' Some-college': 2, ' Assoc': 3, ' Bachelors': 4, ' Masters': 5,
+           ' Doc-Prof': 6}
 df['education'] = df['education'].map(mapping)
 label_encoder = LabelEncoder()
 df['salary'] = label_encoder.fit_transform(df['salary'])
 
+df = df.reindex(sorted(df.columns), axis=1)
+df.info()
 num_features = [i for i in df if df[i].dtype != 'object' and df[i].dtype != 'category']
 print(num_features)
 
 generete_correlation_matrix(df[num_features])
 
-df = df.drop(columns=['native-country', 'relationship', 'fnlwgt', 'education-num', 'marital-status', 'age'])
+df = df.drop(columns=['native-country', 'relationship', 'fnlwgt', 'education-num', 'marital-status'])
 
 cat_features = [i for i in df if df[i].dtype == 'object' or df[i].dtype == 'category']
 print(cat_features)
@@ -90,11 +93,12 @@ df_encoded = pd.get_dummies(df, columns=cat_features, dtype=int)
 y = df['salary']
 X = df_encoded.drop(columns=['salary'])
 
-# train and test
-col_to_test = ['age_scaled', 'age_cat', 'hours-per-week_cat', 'hours-per-week_scaled', 'capital-loss_log', 'capital-gain_log', 'capital-gain_scaled', 'capital-loss_scaled', 'capital_cat']
+col_to_test = ['age_scaled', 'age_cat', 'age', 'hours-per-week', 'hours-per-week_cat', 'hours-per-week_scaled',
+               'capital-loss_log', 'capital-gain_log', 'capital-gain', 'capital-loss', 'capital-gain_scaled',
+               'capital-loss_scaled', 'capital_cat']
 col = copy.deepcopy(col_to_test)
 for i in ['age_cat', 'hours-per-week_cat', 'capital_cat']:
-  col.remove(i)
+    col.remove(i)
 X1 = X.drop(columns=col)
 x = random.randint(0, 256)
 X_train, X_test, y_train, y_test = train_test_split(X1, y, test_size=0.33, random_state=x)
