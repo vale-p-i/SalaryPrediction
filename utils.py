@@ -55,7 +55,7 @@ def clear_dir(directory):
                     print(f"Failed deleting {file_path}: {e}")
             print(f"{directory} elements successfully deleted")
         else:
-            print(f"{directory} does not exist")
+            os.mkdir("output")
     except Exception as e:
         print(f"Failed cleaning {directory}: {e}")
 
