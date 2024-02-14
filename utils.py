@@ -52,12 +52,12 @@ def clear_dir(directory):
                     elif os.path.isdir(file_path):
                         shutil.rmtree(file_path)
                 except Exception as e:
-                    print(f"Errore durante l'eliminazione del file {file_path}: {e}")
-            print(f"Contenuto della cartella {directory} eliminato con successo.")
+                    print(f"Failed deleting {file_path}: {e}")
+            print(f"{directory} elements successfully deleted")
         else:
-            print(f"La cartella {directory} non esiste.")
+            print(f"{directory} does not exist")
     except Exception as e:
-        print(f"Errore generale durante la pulizia della cartella {directory}: {e}")
+        print(f"Failed cleaning {directory}: {e}")
 
 
 def distribution_comparison(df: pd.DataFrame, colname_1, colname_2, varname):
