@@ -17,7 +17,7 @@ def remove_missing_values(df: pd.DataFrame, missing_value: str) -> pd.DataFrame:
     return df
 
 
-def generete_correlation_matrix(columns):
+def generate_correlation_matrix(columns):
     correlation_matrix = columns.corr()
     plt.figure(figsize=(14, 12))
     sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f', linewidths=.5)

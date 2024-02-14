@@ -110,7 +110,7 @@ print(hr)
 df = df.reindex(sorted(df.columns), axis=1)
 num_features = [i for i in df if df[i].dtype != 'object' and df[i].dtype != 'category']
 print("Generation Correlation Matrix")
-generete_correlation_matrix(df[num_features])
+generate_correlation_matrix(df[num_features])
 print("Removing unselected features")
 df = df.drop(columns=['native-country', 'relationship', 'fnlwgt', 'education-num', 'marital-status'])
 
