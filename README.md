@@ -1,4 +1,4 @@
-SalaryPrediction
+# SalaryPrediction
 Il progetto è stato ideato con l'obiettivo di sviluppare un classificatore che sia un grado di predire la fascia di salrio di una persona.
 Per poter eseguire il progetto è necessario, prima di avviare in main.py, risolvere le seguenti dipendeze:
 - pip install numpy
@@ -9,5 +9,5 @@ Per poter eseguire il progetto è necessario, prima di avviare in main.py, risol
 - pip install statistics
 - pip install -U scikit-learn
 
-Memebri 
+# Memebri 
 Valeria Piscitelli
