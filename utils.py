@@ -5,9 +5,10 @@ import seaborn as sns
 import os
 import shutil
 import statistics
-from sklearn.metrics import accuracy_score, recall_score, confusion_matrix, ConfusionMatrixDisplay, precision_score
 from sklearn.model_selection import cross_validate
 from sklearn.tree import DecisionTreeClassifier
+
+hr = '----------------------------------------------------------------------------------------------------'
 
 
 def remove_missing_values(df: pd.DataFrame, missing_value: str) -> pd.DataFrame:
@@ -23,40 +24,21 @@ def generete_correlation_matrix(columns):
     plt.savefig('output/correlationMatrix.png')
 
 
-def generate_confusion_matrix(y_test, predictions):
-    cm = confusion_matrix(y_test, predictions, labels=[0, 1])
-    display = ConfusionMatrixDisplay(confusion_matrix=cm)
-    display.plot()
-    plt.savefig('output/confusion_matrix.png')
-
-
-def fit_and_test(classifier, X_train, y_train, X_test, y_test):
-    print(classifier.__class__.__name__)
-    classifier.fit(X_train, y_train)
-    predictions = classifier.predict(X_test)
-
-    # confusion matrix
-    generate_confusion_matrix(y_test, predictions)
-
-    # show metrics
-    accurancy = accuracy_score(y_test, predictions)
-    print("Accurancy:" + str(accurancy))
-    recall = recall_score(y_test, predictions)
-    print("Recall:" + str(recall))
-    precision = precision_score(y_test, predictions)
-    print("Precision:" + str(precision))
-
-
-def cross_validation(X_train, y_train, features, validator):
+def cross_validation(X, y, features, validator, feature_tested, filename):
+    report = open('output/'+filename, 'a')
     tests = list(["accuracy", "precision", "recall"])
-    cv_score = cross_validate(DecisionTreeClassifier(), X_train, y_train, cv=validator, n_jobs=3, verbose=0, scoring=tests)
+    cv_score = cross_validate(DecisionTreeClassifier(), X, y, cv=validator, n_jobs=3, verbose=0, scoring=tests)
     accuracy_mean = statistics.mean(cv_score['test_accuracy'])
     precision_mean = statistics.mean(cv_score['test_precision'])
     recall_mean = statistics.mean(cv_score['test_recall'])
-    print("Using features: " + str(features))
-    print("Accuracy: " + str(accuracy_mean))
-    print("Precision: " + str(precision_mean))
-    print("Recall: " + str(recall_mean))
+    report.write("\n")
+    report.write("TESTING " + feature_tested + "\n")
+    report.write("Using features: " + str(features) + "\n")
+    report.write("Precision: " + str(precision_mean) + "\n")
+    report.write("Recall: " + str(recall_mean) + "\n")
+    report.write("Accuracy: " + str(accuracy_mean) + "\n")
+    report.write("\n")
+    report.write(hr + "\n")
 
 
 def clear_dir(directory):
@@ -76,3 +58,13 @@ def clear_dir(directory):
             print(f"La cartella {directory} non esiste.")
     except Exception as e:
         print(f"Errore generale durante la pulizia della cartella {directory}: {e}")
+
+
+def distribution_comparison(df: pd.DataFrame, colname_1, colname_2, varname):
+    fig, ax = plt.subplots(2, 1, figsize=(20, 16))
+    sns.countplot(x=colname_1, hue='salary', data=df, palette='Set2', ax=ax[0])
+    ax[0].set_title(f'Before ( {varname} Distribution)')
+    sns.countplot(x=colname_2, hue='salary', data=df, palette='Set2', ax=ax[1])
+    ax[1].set_title(f'After ( {varname} Distribution)')
+    plt.savefig(f'output/{varname}DistributionComparison.png')
+    plt.close()
